@@ -21,7 +21,7 @@ var _fisxoj$elm_media$Native_Media = function() {
 
     function seek(id, targetTime) {
         return withNode(id, function (element) {
-            element.currenTime = targetTime;
+            element.currentTime = targetTime;
             return { ctor: 'Preroll'};
         });
     }
