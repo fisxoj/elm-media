@@ -1,9 +1,10 @@
 module Example exposing (main)
 
 import Task
-import Media exposing (media, source, position, duration, audio, play, pause)
-import Html exposing (program, div, span, text)
-import Html.Events exposing (onClick)
+import Media exposing (media, source, position, duration, audio, play, pause, seek)
+import Json.Decode
+import Html exposing (program, div, span, text, Attribute)
+import Html.Events exposing (onClick, on)
 import Html.Attributes exposing (style)
 
 
@@ -16,6 +17,7 @@ type Msg
     = MediaMessage Media.Msg
     | Play
     | Pause
+    | Seek Float
 
 
 init =
@@ -37,6 +39,17 @@ update msg { player } =
         Pause ->
             { player = player } ! [ Cmd.map MediaMessage <| pause player ]
 
+        Seek pos ->
+            { player = player } ! [ Cmd.map MediaMessage <| seek player (duration player * pos) ]
+
+
+onSeek : (Float -> msg) -> Attribute msg
+onSeek msg =
+    Json.Decode.at [ "clientX" ] Json.Decode.float
+        |> Json.Decode.andThen (\x -> Json.Decode.succeed (x / 300))
+        |> Json.Decode.map msg
+        |> on "click"
+
 
 view { player } =
     let
@@ -48,8 +61,23 @@ view { player } =
             toString ((position player / duration player) * 100) ++ "%"
 
         progressBar =
-            div [ style [ ( "background-color", "black" ), ( "height", "40px" ), ( "width", "300px" ) ] ]
-                [ div [ style [ ( "background-color", "red" ), ( "width", progressPercentageString ), ( "height", "100%" ) ] ] [] ]
+            div
+                [ style
+                    [ ( "background-color", "black" )
+                    , ( "height", "40px" )
+                    , ( "width", "300px" )
+                    ]
+                , onSeek Seek
+                ]
+                [ div
+                    [ style
+                        [ ( "background-color", "red" )
+                        , ( "width", progressPercentageString )
+                        , ( "height", "100%" )
+                        ]
+                    ]
+                    []
+                ]
     in
         div []
             [ progressBar

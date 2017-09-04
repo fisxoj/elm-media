@@ -19,11 +19,13 @@ var _fisxoj$elm_media$Native_Media = function() {
 	});
     }
 
-    function seek(id, targetTime) {
-        return withNode(id, function (element) {
-            element.currentTime = targetTime;
-            return { ctor: 'Preroll'};
-        });
+    function seek(id) {
+        return function (targetTime) {
+            return withNode(id, function (element) {
+                element.currentTime = targetTime;
+                return { ctor: 'Preroll'};
+            });
+        };
     }
 
     function play(id) {
