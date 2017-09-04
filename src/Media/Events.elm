@@ -1,17 +1,17 @@
 module Media.Events exposing (onPlaybackPositionChanged, onDurationChanged, onLoaded)
 
-import Media.Model exposing (Id, Position, MediaState(Loaded))
+import Media.State exposing (MediaState(Loaded))
 import Html
 import Html.Events exposing (on, targetValue)
 import Json.Decode exposing (Decoder, map, map2, at, float, string, andThen, succeed)
 
 
-idDecoder : Decoder Id
+idDecoder : Decoder String
 idDecoder =
     at [ "target", "id" ] string
 
 
-positionDecoder : Decoder Position
+positionDecoder : Decoder Float
 positionDecoder =
     at [ "target", "currentTime" ] float
 

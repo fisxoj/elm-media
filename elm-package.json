@@ -1,5 +1,5 @@
 {
-    "version": "1.0.0",
+    "version": "2.0.0",
     "summary": "Elm library for using the <audio> and <video> tags",
     "repository": "https://github.com/fisxoj/elm-media.git",
     "license": "LGPL v3+",

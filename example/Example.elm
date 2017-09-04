@@ -1,28 +1,25 @@
 module Example exposing (main)
 
 import Task
-import Media.Model exposing (media)
-import Media.Messages as MediaMessages
-import Media.Update
-import Media.View exposing (audio)
+import Media exposing (media, source, position, duration, audio, play, pause)
 import Html exposing (program, div, span, text)
 import Html.Events exposing (onClick)
 import Html.Attributes exposing (style)
 
 
 type alias Model =
-    { player : Media.Model.Model
+    { player : Media.Model
     }
 
 
 type Msg
-    = MediaMessage MediaMessages.Msg
+    = MediaMessage Media.Msg
     | Play
     | Pause
 
 
 init =
-    ( { player = { media | id = "potato", src = Just "10. Kettcar - Dunkel.ogg" } }, Cmd.none )
+    ( { player = media "potato" <| Just "10. Kettcar - Dunkel.ogg" }, Cmd.none )
 
 
 update msg { player } =
@@ -30,25 +27,25 @@ update msg { player } =
         MediaMessage msg ->
             let
                 ( nextPlayer, cmd ) =
-                    Media.Update.update msg player
+                    Media.update msg player
             in
                 ( { player = nextPlayer }, Cmd.map MediaMessage cmd )
 
         Play ->
-            ( { player = player }, Task.perform MediaMessage (Task.succeed MediaMessages.Play) )
+            { player = player } ! [ Cmd.map MediaMessage <| play player ]
 
         Pause ->
-            ( { player = player }, Task.perform MediaMessage (Task.succeed MediaMessages.Pause) )
+            { player = player } ! [ Cmd.map MediaMessage <| pause player ]
 
 
-view model =
+view { player } =
     let
         audioPlayer =
-            audio model.player
+            audio player
                 |> Html.map MediaMessage
 
         progressPercentageString =
-            toString ((model.player.position / model.player.duration) * 100) ++ "%"
+            toString ((position player / duration player) * 100) ++ "%"
 
         progressBar =
             div [ style [ ( "background-color", "black" ), ( "height", "40px" ), ( "width", "300px" ) ] ]
